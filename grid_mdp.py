@@ -1,3 +1,10 @@
+# Markov Decision Process 
+# Grid world example
+# code adopted from UMich EECS 492, Fall 2019
+# Qianbo Yin
+
+
+
 import sys
 import copy
 
@@ -28,7 +35,6 @@ class grid:
 
 	'''
 
-	'''DO NOT EDIT THIS'''
 	def __init__(self, gridfile):
 		'''
 		This init function helps you read and parse the environment file.
