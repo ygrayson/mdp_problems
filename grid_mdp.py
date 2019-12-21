@@ -3,6 +3,8 @@
 # code adopted from UMich EECS 492, Fall 2019
 # Qianbo Yin
 
+# usage: python3 grid_mdp.py [file_name.txt]
+
 
 
 import sys
