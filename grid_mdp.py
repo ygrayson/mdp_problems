@@ -11,7 +11,7 @@ import sys
 import copy
 
 
-class node:
+class Node:
 	'''
 	This class is for book-keeping each state in the MDP.
 
@@ -27,7 +27,7 @@ class node:
 		self.isWall = isWall
 		self.isTerminal = isTerminal
 
-class grid:
+class Grid:
 	'''
 	This class represents our MDP problem. It consists of
 
@@ -48,11 +48,14 @@ class grid:
 		self.grid : a rectangle (defined by nrows-by-ncols) that represents 
 					the environment, with i,j-th element being a node representing the thing at i,j
 		'''
+		# read in from environment file
 		line = open(gridfile, 'r').readlines()
 		self.gamma = float(line[0])
 		self.living_cost = float(line[1])
 		mprobs = line[2].split()
 		self.mprobs = [float(n) for n in mprobs]
+
+		# read in the grid
 		self.grid = []
 		for row in line[3:]:
 			gridrow = []
@@ -61,25 +64,28 @@ class grid:
 				continue
 			for ch in row.split():
 				if ch == '*':
-					gridrow.append(node(reward=self.living_cost))
+					gridrow.append(Node(reward=self.living_cost))
 				elif ch == 'x':
-					gridrow.append(node(isWall=True))
+					gridrow.append(Node(isWall=True))
 				else:
 					try:
 						utility = float(ch)
-						gridrow.append(node(util=utility, isTerminal=True))	
+						gridrow.append(Node(util=utility, isTerminal=True))	
 					except ValueError:
 						print ("Bad grid value")
 						sys.exit()
 			self.grid.append(gridrow)
+		
+		# read in nrows, ncols
 		self.nrows = len(self.grid)
 		assert(self.nrows > 0)
 		self.ncols = len(self.grid[0])
 		assert(self.ncols > 0)
 
+
 	def printGrid(self):
 		'''
-		Print the grid
+		print out a grid with the value
 		'''
 		printstr = ''
 		for row in self.grid:
@@ -90,6 +96,12 @@ class grid:
 					printstr += 'x '
 			printstr += '\n'
 		print (printstr)
+
+	def print_optimal_policy(self):
+		'''
+		print out the optimal deterministic policy, specified by an arrow
+		'''
+		#TODO
 
 	def is_coord_open(self, i, j):
 		'''
@@ -105,6 +117,7 @@ class grid:
 
 	def doValueIteration(self, epsilon=0.00001):
 		'''
+		Value Iteration for optimal value.
 		This function modifies the utilities of each cell in the grid.
 		
 		Input:
@@ -115,11 +128,13 @@ class grid:
 			No need to return anything. You just need to modify the utility for 
 			each cell (state) in self.grid.
 		'''
-		#DONE: Complete value iteration!
+		# convergence criterion
 		delta = 1
 		convergence = min((1-self.gamma)/self.gamma, 1)
 		if convergence == 0:
 			convergence = 1
+		
+		# loop until convergence, asychronous update
 		niters = 0
 		while delta >= epsilon * convergence:
 			delta = 0
@@ -170,8 +185,16 @@ class grid:
 		
 			
 if __name__=='__main__':
+	# define environment from file
 	assert(len(sys.argv)>1)
-	g = grid(sys.argv[1])
+	g = Grid(sys.argv[1])
+
+	# print initial grid
+	print("Initial grid configuration:")
+	g.printGrid()
+
+	# solve MDP problem
 	g.doValueIteration()
+	print("Converged state value for each grid:")
 	g.printGrid()
 
