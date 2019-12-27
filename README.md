@@ -8,3 +8,8 @@ gamma
 step_negative_reward
 transition_dynamics
 [grid]
+
+2. Test files
+ - gridtest.txt: easiest test file with correct solution
+ - grid_1.txt
+ - grid_maze.txt: maze like grid environment

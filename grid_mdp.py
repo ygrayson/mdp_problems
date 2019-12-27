@@ -125,8 +125,8 @@ class Grid:
 			self: this MDP problem
 		
 		Output:
-			No need to return anything. You just need to modify the utility for 
-			each cell (state) in self.grid.
+			Return # of iteration completed before convergence.
+			Modify the utility for each cell (state) in self.grid.
 		'''
 		# convergence criterion
 		delta = 1
@@ -141,30 +141,30 @@ class Grid:
 			new_grid = copy.deepcopy(self.grid)
 			for i in range(self.nrows):
 				for j in range(self.ncols):
-					cur = self.grid[i][j]
-					if cur.isWall or cur.isTerminal:
+					current = self.grid[i][j]
+					if current.isWall or current.isTerminal:
 						continue
 					# find resulting position in each direction
-					# up state
+					# up action
 					if self.is_coord_open(i-1, j):
 						up_state = self.grid[i-1][j]
 					else:
-						up_state = cur
-					# right state
+						up_state = current
+					# right action
 					if self.is_coord_open(i, j+1):
 						right_state = self.grid[i][j+1]
 					else:
-						right_state = cur
-					# down state
+						right_state = current
+					# down action
 					if self.is_coord_open(i+1, j):
 						down_state = self.grid[i+1][j]
 					else:
-						down_state = cur
-					# left state
+						down_state = current
+					# left action
 					if self.is_coord_open(i, j-1):
 						left_state = self.grid[i][j-1]
 					else:
-						left_state = cur
+						left_state = current
 					
 					# find Q-value of each action
 					north_qval = self.mprobs[0]*up_state.util + self.mprobs[1]*right_state.util + self.mprobs[2]*down_state.util + self.mprobs[3]*left_state.util
@@ -173,14 +173,29 @@ class Grid:
 					west_qval =  self.mprobs[0]*left_state.util + self.mprobs[1]*up_state.util + self.mprobs[2]*right_state.util + self.mprobs[3]*down_state.util
 					
 					# bellman update for utility
-					new_grid[i][j].util = cur.reward + self.gamma * max(north_qval, south_qval, east_qval, west_qval)
+					new_grid[i][j].util = current.reward + self.gamma * max(north_qval, south_qval, east_qval, west_qval)
 					# keep track of maximum change, delta
-					change = abs(new_grid[i][j].util - cur.util)
+					change = abs(new_grid[i][j].util - current.util)
 					if change > delta:
 						delta = change
 
 			self.grid = new_grid
 			niters += 1
+		return niters
+
+	
+	def doPolicyIteration(self):
+		'''
+		Policy iteration on grid world, find optimal policy
+
+		Input:
+		nothing, self is the MDP problem
+
+		Output:
+		optimal policy, defined on each grid
+		'''
+		#TODO
+
 
 		
 			
@@ -193,8 +208,9 @@ if __name__=='__main__':
 	print("Initial grid configuration:")
 	g.printGrid()
 
-	# solve MDP problem
-	g.doValueIteration()
+	# solve MDP problem with value iteration
+	niters = g.doValueIteration()
+	print("Iteration #:", niters)
 	print("Converged state value for each grid:")
 	g.printGrid()
 
